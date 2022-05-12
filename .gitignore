@@ -1,0 +1,4 @@
+target
+.vscode
+Cargo.lock
+assets/compiled_shaders/*
