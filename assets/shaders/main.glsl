@@ -20,7 +20,7 @@ uniform Uniforms {
 const float MAX_STEPS = 512; 
 const float MIN_HIT_DIST = 0.0001;
 const float MAX_DIST = 100.0;
-#define AA 4
+#define AA 1
 
 const Material[2] materials = {
 	Material(
@@ -39,10 +39,10 @@ const Material[2] materials = {
 
 // world map
 Hit map(vec3 p) {
-	//Hit sphere1 = Hit(sdSphere(p, vec3(0.0, 1.1, 0.0), 1.0), 0);
-	Hit cap1 = Hit(sdCapsule(p, vec3(-5.0, 1.1, 0.0), vec3(5.0, 1.1, 0.0), 1.0), 0);
+	Hit sphere1 = Hit(sdSphere(p, vec3(0.0, 1.1, 0.0), 1.0), 0);
+	//Hit cap1 = Hit(sdCapsule(p, vec3(-5.0, 1.1, 0.0), vec3(5.0, 1.1, 0.0), 1.0), 0);
 	Hit box1 = Hit(sdBox(p, vec3(10.0, 0.1, 10.0)), 1);
-	return opUnion(cap1, box1);
+	return opUnion(sphere1, box1);
 }
 
 // return normal at p

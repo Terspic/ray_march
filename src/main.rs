@@ -198,7 +198,7 @@ impl<'a> AppInstance for MainApp<'a> {
     }
 
     fn events(&mut self, event: &winit::event::WindowEvent) {
-        self.camera_controller.handle_events(event)
+        self.camera_controller.handle_events(event);
     }
 
     fn update(&mut self, gpu: &Gpu, dt: Duration) {

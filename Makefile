@@ -7,10 +7,10 @@ build: shaders
 	cargo build
 
 run: shaders 
-	RUST_LOG=info cargo run
+	WINIT_UNIX_BACKEND=x11 RUST_LOG=info cargo run
 
 run_release: shaders
-	RUST_LOG=info cargo run --release
+	WINIT_UNIX_BACKEND=x11 RUST_LOG=info cargo run --release
 
 shaders: quad comp
 

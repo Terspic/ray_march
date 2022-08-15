@@ -39,7 +39,7 @@ pub struct CameraController {
     is_middle_button_hold: bool,
     last_cursor: (f64, f64),
     rotation: (f32, f32),
-    zoom: i8,
+    zoom: f32,
 }
 
 impl CameraController {
@@ -53,7 +53,7 @@ impl CameraController {
             is_middle_button_hold: false,
             last_cursor: (0.0, 0.0),
             rotation: (0.0, 0.0),
-            zoom: 0,
+            zoom: 0.0,
         }
     }
 
@@ -78,7 +78,7 @@ impl CameraController {
                 self.last_cursor = (position.x, position.y);
             }
             WindowEvent::MouseWheel { delta, .. } => match delta {
-                MouseScrollDelta::LineDelta(_, dy) => self.zoom = *dy as i8,
+                MouseScrollDelta::LineDelta(_, dy) => self.zoom = *dy,
                 _ => (),
             },
             _ => (),
@@ -104,7 +104,7 @@ impl CameraController {
             }
         }
 
-        if self.zoom != 0 {
+        if self.zoom != 0.0 {
             self.camera.eye = Mat4::from_translation(
                 dir * Self::ZOOM_SPEED * dt.as_secs_f32() * self.zoom as f32,
             )
@@ -113,7 +113,7 @@ impl CameraController {
 
         // reset properties
         self.rotation = (0.0, 0.0);
-        self.zoom = 0;
+        self.zoom = 0.0;
     }
 }
 
@@ -124,7 +124,7 @@ impl Default for CameraController {
             screen_size: (1280.0, 720.0),
             rotation: (0.0, 0.0),
             last_cursor: (0.0, 0.0),
-            zoom: 0,
+            zoom: 0.0,
             is_middle_button_hold: false,
         }
     }
