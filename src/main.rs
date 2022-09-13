@@ -1,5 +1,5 @@
 mod camera;
-mod fileobserver;
+mod filewatcher;
 mod raymarch_pipeline;
 mod utils;
 

@@ -33,6 +33,14 @@ float sdCapsule(vec3 p, float d, float r) {
 	p.x -= clamp(p.x, 0.0, d);
 	return length(p) - r;
 }
+
+float sdInfiniteCylinder(vec3 p, vec3 pos, vec3 dir, float r) {
+	vec3 q = p - pos;
+	float d = length(cross(q, dir)) / length(dir);
+
+	return d - r;
+}
+
 float sdCylinder(vec3 p, float h, float r) {
 	return 0.0;
 }

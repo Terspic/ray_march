@@ -1,7 +1,7 @@
 use std::process::Command;
 
 use crate::{
-    fileobserver::*,
+    filewatcher::*,
     utils::{load_spirv_shader, ComputeUniforms},
     wgpu,
 };
@@ -13,7 +13,7 @@ pub struct RayMarchPipeline<'a> {
     pipeline: wgpu::ComputePipeline,
     bind_group: wgpu::BindGroup,
     uniforms_buffer: wgpu::Buffer,
-    shader_observer: FileObserver<'a>,
+    shader_observer: FileWatcher<'a>,
 }
 
 impl<'a> RayMarchPipeline<'a> {
@@ -79,7 +79,7 @@ impl<'a> RayMarchPipeline<'a> {
             layout: Some(&pipeline_layout),
         });
 
-        let shader_observer = FileObserver::new(&[
+        let shader_observer = FileWatcher::new(&[
             "assets/shaders/main.glsl",
             "assets/shaders/sdf.glsl",
             "assets/shaders/utils.glsl",

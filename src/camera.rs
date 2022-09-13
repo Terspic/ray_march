@@ -105,10 +105,14 @@ impl CameraController {
         }
 
         if self.zoom != 0.0 {
-            self.camera.eye = Mat4::from_translation(
+            let new_eye = Mat4::from_translation(
                 dir * Self::ZOOM_SPEED * dt.as_secs_f32() * self.zoom as f32,
             )
             .transform_point3(self.camera.eye);
+
+            if (new_eye - self.camera.target).length() > 1.0 {
+                self.camera.eye = new_eye;
+            }
         }
 
         // reset properties

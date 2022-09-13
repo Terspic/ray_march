@@ -3,12 +3,12 @@ use std::io;
 use std::path::Path;
 
 #[derive(Debug, Clone)]
-pub struct FileObserver<'a> {
+pub struct FileWatcher<'a> {
     files: Vec<&'a Path>,
     metadata: Vec<fs::Metadata>,
 }
 
-impl<'a> FileObserver<'a> {
+impl<'a> FileWatcher<'a> {
     pub fn new<T: AsRef<Path>>(files: &'a [T]) -> io::Result<Self> {
         let mut metadata = Vec::with_capacity(files.len());
         for file in files {

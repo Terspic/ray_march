@@ -32,3 +32,8 @@ vec2 map_pixel_to_screen(ivec2 coords, vec2 dim) {
 	vec2 uv =  (2.0 * coords - dim.xy) / dim.y;
 	return vec2(uv.x, -uv.y);
 }
+
+float checker(vec2 p) {
+	vec2 q = floor(p);
+	return mod(q.x+q.y, 2);
+}
