@@ -192,6 +192,6 @@ void main() {
 	vec3 final_color = compute_color(r.orig, r.dir);
 #endif
 
-	// record pixel
+	// write pixel
 	imageStore(u_output, coords, vec4(final_color, 1.0));
 }

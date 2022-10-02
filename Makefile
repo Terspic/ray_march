@@ -3,23 +3,14 @@ BINARY_PATH = ./assets/compiled_shaders
 
 all: build
 
-build: shaders
+build: shaders_dir
 	cargo build
 
-run: shaders 
+run:  
 	WINIT_UNIX_BACKEND=x11 RUST_LOG=info cargo run
 
-run_release: shaders
+run_release:
 	WINIT_UNIX_BACKEND=x11 RUST_LOG=info cargo run --release
-
-shaders: quad comp
-
-quad: shaders_dir
-	glslc -fshader-stage=vert -O $(SHADER_PATH)/$@.vert -o $(BINARY_PATH)/$@.vert.spv
-	glslc -fshader-stage=frag -O $(SHADER_PATH)/$@.frag -o $(BINARY_PATH)/$@.frag.spv
-
-comp: shaders_dir
-	glslc -fshader-stage=comp -O $(SHADER_PATH)/main.glsl -o $(BINARY_PATH)/main.comp.spv
 
 shaders_dir:
 	mkdir -p assets/compiled_shaders 

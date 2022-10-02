@@ -1,4 +1,5 @@
-use std::process::Command;
+use shaderc;
+use std::fs;
 
 use crate::{
     filewatcher::*,
@@ -14,6 +15,7 @@ pub struct RayMarchPipeline<'a> {
     bind_group: wgpu::BindGroup,
     uniforms_buffer: wgpu::Buffer,
     shader_observer: FileWatcher<'a>,
+    compiler: shaderc::Compiler,
 }
 
 impl<'a> RayMarchPipeline<'a> {
@@ -71,7 +73,7 @@ impl<'a> RayMarchPipeline<'a> {
         });
 
         let shader_mod =
-            load_spirv_shader("assets/compiled_shaders/main.comp.spv", device).unwrap();
+            load_spirv_shader("./assets/compiled_shaders/main.glsl.spv", device).unwrap();
         let pipeline = device.create_compute_pipeline(&wgpu::ComputePipelineDescriptor {
             label: Some("main_compute_pipeline"),
             module: &shader_mod,
@@ -80,11 +82,13 @@ impl<'a> RayMarchPipeline<'a> {
         });
 
         let shader_observer = FileWatcher::new(&[
-            "assets/shaders/main.glsl",
-            "assets/shaders/sdf.glsl",
-            "assets/shaders/utils.glsl",
+            "./assets/shaders/main.glsl",
+            "./assets/shaders/sdf.glsl",
+            "./assets/shaders/utils.glsl",
         ])
         .unwrap();
+
+        let compiler = shaderc::Compiler::new().unwrap();
 
         Self {
             pipeline_layout,
@@ -92,6 +96,7 @@ impl<'a> RayMarchPipeline<'a> {
             pipeline,
             bind_group,
             uniforms_buffer,
+            compiler,
         }
     }
 
@@ -102,17 +107,38 @@ impl<'a> RayMarchPipeline<'a> {
     pub fn update_shader(&mut self, gpu: &Gpu) {
         let modified_shaders = self.shader_observer.modified();
         if modified_shaders.len() != 0 {
-            // rebuild shaders
-            match Command::new("make").args(&["shaders", "-j12"]).output() {
-                Ok(output) => println!("{}", std::str::from_utf8(&output.stderr).unwrap()),
-                Err(e) => {
-                    println!("{}", e);
-                    return;
-                }
+            let mut opts = shaderc::CompileOptions::new().unwrap();
+            opts.set_include_callback(|src, _, _, _| {
+                Ok(shaderc::ResolvedInclude {
+                    resolved_name: format!("./assets/shaders/{}", src),
+                    content: fs::read_to_string(format!("./assets/shaders/{}", src)).unwrap(),
+                })
+            });
+            opts.set_optimization_level(shaderc::OptimizationLevel::Performance);
+
+            for shader_path in modified_shaders {
+                let shader_name = shader_path.file_name().unwrap().to_str().unwrap();
+
+                let binary_output = self
+                    .compiler
+                    .compile_into_spirv(
+                        fs::read_to_string(shader_path).unwrap().as_str(),
+                        shaderc::ShaderKind::Compute,
+                        shader_name,
+                        "main",
+                        Some(&opts),
+                    )
+                    .unwrap();
+
+                fs::write(
+                    format!("./assets/compiled_shaders/{}.spv", shader_name),
+                    binary_output.as_binary_u8(),
+                )
+                .unwrap()
             }
 
             let shader_module =
-                load_spirv_shader("assets/compiled_shaders/main.comp.spv", &gpu.device).unwrap();
+                load_spirv_shader("./assets/compiled_shaders/main.glsl.spv", &gpu.device).unwrap();
 
             self.pipeline = gpu
                 .device
