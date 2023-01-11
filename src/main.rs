@@ -32,6 +32,7 @@ pub struct MainApp<'a> {
     clock: Instant,
     run_shader: bool,
     enable_hot_reload: bool,
+    ui_take_input: bool,
 }
 
 impl<'a> AppInstance for MainApp<'a> {
@@ -159,6 +160,7 @@ impl<'a> AppInstance for MainApp<'a> {
             clock: Instant::now(),
             run_shader: true,
             enable_hot_reload: true,
+            ui_take_input: false,
         }
     }
 
@@ -198,7 +200,9 @@ impl<'a> AppInstance for MainApp<'a> {
     }
 
     fn events(&mut self, event: &winit::event::WindowEvent) {
-        self.camera_controller.handle_events(event);
+        if !self.ui_take_input {
+            self.camera_controller.handle_events(event);
+        }
     }
 
     fn update(&mut self, gpu: &Gpu, dt: Duration) {
@@ -230,10 +234,13 @@ impl<'a> AppInstance for MainApp<'a> {
                 dt * 1000.0,
                 1.0 / dt
             ));
+
             ui.separator();
             ui.text("Hello");
             ui.checkbox("run", &mut self.run_shader);
             ui.checkbox("hot reload", &mut self.enable_hot_reload);
+
+            self.ui_take_input = ui.is_window_focused();
         });
     }
 }

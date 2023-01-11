@@ -17,7 +17,7 @@ uniform Uniforms {
 };
 
 // constants
-const float MAX_STEPS = 256; 
+const float MAX_STEPS = 256;
 const float MIN_HIT_DIST = 0.001;
 const float MAX_DIST = 100.0;
 
@@ -32,7 +32,7 @@ const Material[] materials = {
 		vec3(1.0, 0.0, 0.0),
 		vec3(0.0),
 		1.0
-	),	
+	),
 	Material(
 		vec3(0.0, 1.0, 0.0),
 		vec3(0.0, 1.0, 0.0),
@@ -143,7 +143,7 @@ vec3 compute_lighting(vec3 ro, vec3 rd, vec3 pos, vec3 normal, vec3 light_pos, i
 	if (dif > 0.001) {
 		dif *= shadow(pos + normal * 0.001, light_dir, length(light_pos - pos), 32.0);
 	}
-#endif	
+#endif
 
 	return mat.diffuse * dif + mat.ambient * amb + mat.specular * spec;
 }
